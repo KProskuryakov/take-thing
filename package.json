@@ -1,0 +1,22 @@
+{
+  "name": "taking",
+  "version": "1.0.0",
+  "description": "An app to choose things",
+  "main": "index.js",
+  "scripts": {
+    "start": "static-server ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KProskuryakov/taking.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KProskuryakov/taking/issues"
+  },
+  "homepage": "https://github.com/KProskuryakov/taking#readme",
+  "devDependencies": {
+    "static-server": "^2.2.1"
+  }
+}
