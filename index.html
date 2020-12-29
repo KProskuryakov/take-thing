@@ -56,7 +56,7 @@
       console.log(localStorage.getItem("listItems"));
     }
 
-    takeButton.onclick = () => {
+    function result() {
       const things = [];
       document.querySelectorAll("#listForm > div > input").forEach((e) => {
         if (e.value != "") {
@@ -70,7 +70,9 @@
       }
       resultField.value = things[Math.floor(Math.random() * things.length)];
       populateStorage();
-    };
+    }
+
+    takeButton.onclick = result
 
     listForm.appendChild(newItemComponent());
 
@@ -84,7 +86,22 @@
       input.placeholder = "Item";
       input.onkeydown = (ev) => {
         if (ev.key == "Enter") {
+          if (ev.shiftKey) {
+            result();
+            return false;
+          }
           add();
+          return false;
+        } else if (ev.key == "ArrowDown") {
+          div.parentElement.firstElementChild.firstChild.focus();
+          return false;
+        } else if (ev.key == "ArrowUp" || (ev.key == "Backspace" && input.value == "")) {
+          const prev =  div.previousSibling;
+          if (prev) {
+            div.previousSibling.firstChild.focus();
+          } else {
+            div.parentElement.lastChild.firstChild.focus();
+          }
           return false;
         }
       };
@@ -120,12 +137,28 @@
       input.value = text;
       input.onkeydown = (ev) => {
         if (ev.key == "Enter") {
+          if (ev.shiftKey) {
+            result();
+            return false;
+          }
           div.nextSibling.firstChild.focus();
           return false;
-        } else if (ev.key == "Delete") {
+        } else if (ev.key == "Delete" || (ev.key == "Backspace" && input.value == "")) {
           div.nextSibling.firstChild.focus();
           div.parentElement.removeChild(div);
           populateStorage();
+          return false;
+        } else if (ev.key == "ArrowUp") {
+          const prev =  div.previousSibling.firstChild;
+          console.log(prev);
+          if (prev) {
+            div.previousSibling.firstChild.focus();
+          } else {
+            div.parentElement.lastChild.firstChild.focus();
+          }
+          return false;
+        } else if (ev.key == "ArrowDown") {
+          div.nextSibling.firstChild.focus();
           return false;
         }
       };
