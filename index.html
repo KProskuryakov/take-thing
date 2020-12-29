@@ -34,6 +34,28 @@
     const takeButton = document.getElementById("takeButton");
     const resultField = document.getElementById("resultField");
 
+    const localStorage = window.localStorage;
+    const listItems = localStorage.getItem("listItems");
+    console.log(localStorage.getItem("listItems"));
+    if (listItems != null) {
+      const list = JSON.parse(listItems);
+      list.forEach((item) => {
+        listForm.appendChild(existingItemComponent(item));
+      });
+    }
+
+    function populateStorage() {
+      const things = [];
+      document.querySelectorAll("#listForm > div > input").forEach((e) => {
+        if (e.value != "") {
+          things.push(e.value);
+        }
+      });
+
+      localStorage.setItem("listItems", JSON.stringify(things));
+      console.log(localStorage.getItem("listItems"));
+    }
+
     takeButton.onclick = () => {
       const things = [];
       document.querySelectorAll("#listForm > div > input").forEach((e) => {
@@ -47,6 +69,7 @@
         return true;
       }
       resultField.value = things[Math.floor(Math.random() * things.length)];
+      populateStorage();
     };
 
     listForm.appendChild(newItemComponent());
@@ -78,6 +101,7 @@
         }
         div.parentElement.insertBefore(existingItemComponent(input.value), div);
         input.value = "";
+        populateStorage();
       };
 
       div.appendChild(input);
@@ -99,7 +123,8 @@
           return false;
         } else if (ev.key == "Delete") {
           div.nextSibling.firstChild.focus();
-          div.parentElement.removeChild(div)
+          div.parentElement.removeChild(div);
+          populateStorage();
           return false;
         }
       };
@@ -107,7 +132,7 @@
       const button = document.createElement("button");
       button.className = "btn btn-danger";
       button.textContent = "Delete"
-      button.onclick = (_) => { div.parentElement.removeChild(div) };
+      button.onclick = (_) => { div.parentElement.removeChild(div); populateStorage(); };
 
       div.appendChild(input);
       div.appendChild(button);
