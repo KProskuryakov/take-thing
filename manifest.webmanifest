@@ -1,0 +1,17 @@
+{
+  "short_name": "Take Thing",
+  "name": "Take Thing",
+  "description": "Take things randomly from a list.",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#EEEEEE",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#EEEEEE"
+}
