@@ -21,7 +21,7 @@
     </form>
     <div class="input-group">
       <input type="text" class="form-control" placeholder="Result" disabled id="resultField">
-      <button type="button" class="btn btn-primary" id="takeButton">Take</button>
+      <button type="button" class="btn btn-primary" id="takeButton" style="width: 70px;">Take</button>
     </div>
 
 
@@ -91,8 +91,9 @@
 
       const button = document.createElement("button");
       button.className = "btn btn-success";
-      button.textContent = "Add";
+      button.textContent = "+";
       button.type = "button";
+      button.style = "width: 70px"
       button.onclick = add
 
       function add() {
@@ -131,7 +132,8 @@
 
       const button = document.createElement("button");
       button.className = "btn btn-danger";
-      button.textContent = "Delete"
+      button.textContent = "X"
+      button.style = "width: 70px"
       button.onclick = (_) => { div.parentElement.removeChild(div); populateStorage(); };
 
       div.appendChild(input);
