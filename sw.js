@@ -1,4 +1,4 @@
-const CACHE_NAME = "take-thing-cache-v2";
+const CACHE_NAME = "take-thing-cache-v3";
 const urlsToCache = [
   "/",
   "bootstrap.bundle.min.js",
