@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
 
 <head>
   <!-- Required meta tags for Bootstrap -->
@@ -13,19 +13,29 @@
   <title>Take Thing</title>
 </head>
 
-<body>
-  <div class="container">
-    <noscript>This page doesn't work without javascript.</noscript>
+<body class="d-flex flex-column h-100">
+  <main class="flex-shrink-0">
     <br>
-    <form id="listForm">
-    </form>
-    <div class="input-group">
-      <input type="text" class="form-control" placeholder="Result" disabled id="resultField">
-      <button type="button" class="btn btn-primary" id="takeButton" style="width: 70px;">Take</button>
+    <div class="container">
+      <noscript>This page doesn't work without javascript.</noscript>
+      <form id="listForm">
+      </form>
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="" disabled id="resultField">
+        <button type="button" class="btn btn-primary" id="takeButton" style="width: 70px;">Take</button>
+      </div>
     </div>
+  </main>
 
-
-  </div>
+  <footer class="footer mt-auto py-3 bg-light">
+    <div class="container">
+      <p class="lead">
+        Take a random thing from the list
+      </p>
+      <span class="text-muted">Created by <a href="https://github.com/KProskuryakov/take-thing">Kostyantyn
+          Proskuryakov</a> &copy; 2020-2021</span>
+    </div>
+  </footer>
 
   <!-- Bootstrap Bundle with Popper -->
   <script src="bootstrap.bundle.min.js"></script>
@@ -96,7 +106,7 @@
           div.parentElement.firstElementChild.firstChild.focus();
           return false;
         } else if (ev.key == "ArrowUp" || (ev.key == "Backspace" && input.value == "")) {
-          const prev =  div.previousSibling;
+          const prev = div.previousSibling;
           if (prev) {
             div.previousSibling.firstChild.focus();
           } else {
@@ -149,7 +159,7 @@
           populateStorage();
           return false;
         } else if (ev.key == "ArrowUp") {
-          const prev =  div.previousSibling.firstChild;
+          const prev = div.previousSibling.firstChild;
           console.log(prev);
           if (prev) {
             div.previousSibling.firstChild.focus();
@@ -176,17 +186,17 @@
   </script>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js').then(function (registration) {
           // Registration was successful
           console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, function(err) {
+        }, function (err) {
           // registration failed
           console.log('ServiceWorker registration failed: ', err);
         });
       });
     }
-    </script>
+  </script>
 </body>
 
 </html>
