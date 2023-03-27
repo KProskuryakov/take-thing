@@ -12,9 +12,27 @@
   <style>
     html, body, .container {
       height: 100%;
+      margin-top: 1em;
+      background-color: rgb(29, 29, 29);
     }
-    textarea.form-control {
+    #textarea {
       height: 100%;
+      resize: none;
+      background-color: rgb(49, 49, 49);
+      color: rgb(209, 209, 209);
+      outline: none;
+    }
+    #textarea:focus {
+      background-color: rgb(49, 49, 49);
+      color: rgb(209, 209, 209);
+      outline: none;
+    }
+    label.form-check-label {
+      color: rgb(209, 209, 209);
+    }
+    #resultField {
+      background-color: rgb(49, 49, 49);
+      color: rgb(209, 209, 209);
     }
   </style>
   <title>Take Thing</title>
@@ -24,7 +42,7 @@
     <br>
     <div class="container h-100">
       <noscript>This page doesn't work without javascript.</noscript>
-      <textarea class="form-control h-100" style="resize:none;" placeholder="Enter things to pick from here." id="textarea"></textarea>
+      <textarea class="form-control h-100" placeholder="Enter things to pick from here." id="textarea"></textarea>
       <br>
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
