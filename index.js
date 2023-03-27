@@ -2,8 +2,9 @@
 const textarea = document.getElementById("textarea");
 const takeButton = document.getElementById("takeButton");
 const resultField = document.getElementById("resultField");
-const inlineCheckbox1 = document.getElementById("inlineCheckbox1");
-const inlineCheckbox2 = document.getElementById("inlineCheckbox2");
+const lineBox = document.getElementById("inlineCheckbox1");
+const inlineBox = document.getElementById("inlineCheckbox2");
+const commaBox = document.getElementById("inlineCheckbox3");
 const text = localStorage.getItem("text");
 if (text != null) {
     textarea.value = text;
@@ -11,28 +12,47 @@ if (text != null) {
 const checkboxes = localStorage.getItem("checkboxes");
 if (checkboxes != null) {
     const checkeds = JSON.parse(checkboxes);
-    inlineCheckbox1.checked = checkeds.checkbox1;
-    inlineCheckbox2.checked = checkeds.checkbox2;
+    lineBox.checked = checkeds.lineBoxChecked;
+    inlineBox.checked = checkeds.inlineBoxChecked;
+    commaBox.checked = checkeds.commaBoxChecked;
 }
 function populateStorage() {
     localStorage.setItem("text", textarea.value);
-    localStorage.setItem("checkboxes", JSON.stringify({ checkbox1: inlineCheckbox1.checked, checkbox2: inlineCheckbox2.checked }));
-    console.log(localStorage.getItem("text"));
+    localStorage.setItem("checkboxes", JSON.stringify({ lineBoxChecked: lineBox.checked, inlineBoxChecked: inlineBox.checked, commaBoxChecked: commaBox.checked }));
 }
-function result() {
-    let things = textarea.value.trim().split("\n").map((s) => s.trim()).filter((s) => s.length > 0);
-    ;
-    if (inlineCheckbox1.checked) {
-        things = things.join(" ").split(/\s+/).map((s) => s.trim()).filter((s) => s.length > 0);
-    }
-    if (inlineCheckbox2.checked) {
-        if (inlineCheckbox1.checked) {
-            things = textarea.value.split(/(\s+|,)/).map((s) => s.trim()).filter((s) => s.length > 0);
+function flatMap(a, func) {
+    return new Array().concat(...a.map(func));
+}
+function replaceAllChars(s, c, r) {
+    let newStr = "";
+    for (let i = 0; i < s.length; i++) {
+        if (s.charAt(i) === c) {
+            newStr += r;
         }
         else {
-            things = textarea.value.split(",").map((s) => s.trim()).filter((s) => s.length > 0);
+            newStr += s.charAt(i);
         }
     }
+    return newStr;
+}
+function result() {
+    let things = [textarea.value.trim()];
+    if (lineBox.checked) {
+        things = flatMap(things, (v) => v.split("\n").map(s => s.trim()));
+    }
+    else {
+        things = things.map(v => replaceAllChars(v, "\n", " "));
+    }
+    if (inlineBox.checked) {
+        if (commaBox.checked) {
+            things = flatMap(things, (v) => [replaceAllChars(v, ",", " ").trim()]);
+        }
+        things = flatMap(things, (v) => v.split(/\s+/).map(s => s.trim()));
+    }
+    else if (commaBox.checked) {
+        things = flatMap(things, (v) => v.split(",").map(s => s.trim()));
+    }
+    things = things.filter((s) => s.length > 0);
     if (things.length === 0) {
         resultField.value = "Nothing to take from";
         return true;
@@ -43,7 +63,7 @@ function result() {
 takeButton.onclick = result;
 textarea.onkeydown = (ev) => {
     if (ev.key == "Enter") {
-        if (ev.shiftKey) {
+        if (ev.shiftKey || ev.ctrlKey) {
             result();
             return false;
         }

@@ -2,8 +2,9 @@ const textarea = document.getElementById("textarea") as HTMLTextAreaElement;
 const takeButton = document.getElementById("takeButton") as HTMLButtonElement;
 const resultField = document.getElementById("resultField") as HTMLInputElement;
 
-const inlineCheckbox1 = document.getElementById("inlineCheckbox1") as HTMLInputElement;
-const inlineCheckbox2 = document.getElementById("inlineCheckbox2") as HTMLInputElement;
+const lineBox = document.getElementById("inlineCheckbox1") as HTMLInputElement;
+const inlineBox = document.getElementById("inlineCheckbox2") as HTMLInputElement;
+const commaBox = document.getElementById("inlineCheckbox3") as HTMLInputElement;
 
 const text = localStorage.getItem("text");
 if (text != null) {
@@ -12,29 +13,49 @@ if (text != null) {
 
 const checkboxes = localStorage.getItem("checkboxes");
 if (checkboxes != null) {
-  const checkeds = JSON.parse(checkboxes) as {checkbox1: boolean, checkbox2: boolean};
-  inlineCheckbox1.checked = checkeds.checkbox1;
-  inlineCheckbox2.checked = checkeds.checkbox2;
+  const checkeds = JSON.parse(checkboxes) as {lineBoxChecked: boolean, inlineBoxChecked: boolean, commaBoxChecked: boolean};
+  lineBox.checked = checkeds.lineBoxChecked;
+  inlineBox.checked = checkeds.inlineBoxChecked;
+  commaBox.checked = checkeds.commaBoxChecked;
 }
 
 function populateStorage() {
   localStorage.setItem("text", textarea.value);
-  localStorage.setItem("checkboxes", JSON.stringify({checkbox1: inlineCheckbox1.checked, checkbox2: inlineCheckbox2.checked}))
-  console.log(localStorage.getItem("text"));
+  localStorage.setItem("checkboxes", JSON.stringify({lineBoxChecked: lineBox.checked, inlineBoxChecked: inlineBox.checked, commaBoxChecked: commaBox.checked}))
+}
+
+function flatMap<T>(a: Array<T>, func: (v: T) => T[]) {
+  return new Array<T>().concat(...a.map(func));
+}
+
+function replaceAllChars(s: string, c: string, r: string) {
+  let newStr = "";
+  for (let i = 0; i < s.length; i++) {
+    if (s.charAt(i) === c) {
+      newStr += r;
+    } else {
+      newStr += s.charAt(i);
+    }
+  }
+  return newStr;
 }
 
 function result() {
-  let things = textarea.value.trim().split("\n").map((s) => s.trim()).filter((s) => s.length > 0);;
-  if (inlineCheckbox1.checked) {
-      things = things.join(" ").split(/\s+/).map((s) => s.trim()).filter((s) => s.length > 0);
+  let things = [textarea.value.trim()];
+  if (lineBox.checked) {
+    things = flatMap(things, (v) => v.split("\n").map(s => s.trim()));
+  } else {
+    things = things.map(v => replaceAllChars(v, "\n", " "));
   }
-  if (inlineCheckbox2.checked) {
-      if (inlineCheckbox1.checked) {
-        things = textarea.value.split(/(\s+|,)/).map((s) => s.trim()).filter((s) => s.length > 0);
-      } else {
-        things = textarea.value.split(",").map((s) => s.trim()).filter((s) => s.length > 0);
+  if (inlineBox.checked) {
+      if (commaBox.checked) {
+        things = flatMap(things, (v) => [replaceAllChars(v, ",", " ").trim()]);
       }
+      things = flatMap(things, (v) => v.split(/\s+/).map(s => s.trim()));
+  } else if (commaBox.checked) {
+    things = flatMap(things, (v) => v.split(",").map(s => s.trim()));
   }
+  things = things.filter((s) => s.length > 0);
   if (things.length === 0) {
       resultField.value = "Nothing to take from";
       return true;
@@ -47,7 +68,7 @@ takeButton.onclick = result
 
 textarea.onkeydown = (ev) => {
   if (ev.key == "Enter") {
-    if (ev.shiftKey) {
+    if (ev.shiftKey || ev.ctrlKey) {
       result();
       return false;
     }
