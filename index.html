@@ -7,182 +7,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Bootstrap CSS -->
-  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
   <link rel="manifest" href="/manifest.webmanifest">
-
+  <style>
+    html, body, .container {
+      height: 100%;
+    }
+    textarea.form-control {
+      height: 100%;
+    }
+  </style>
   <title>Take Thing</title>
 </head>
 
-<body class="d-flex flex-column h-100">
-  <main class="flex-shrink-0">
+<body class="d-flex flex-column h-75">
     <br>
-    <div class="container">
+    <div class="container h-100">
       <noscript>This page doesn't work without javascript.</noscript>
-      <form id="listForm">
-      </form>
+      <textarea class="form-control h-100" style="resize:none;" placeholder="Enter things to pick from here." id="textarea"></textarea>
+      <br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
+        <label class="form-check-label" for="inlineCheckbox1">Split Lines</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+        <label class="form-check-label" for="inlineCheckbox2">Split Inline</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+        <label class="form-check-label" for="inlineCheckbox3">Split Commas</label>
+      </div>
+      
       <div class="input-group">
         <input type="text" class="form-control" placeholder="" disabled id="resultField">
         <button type="button" class="btn btn-primary" id="takeButton" style="width: 70px;">Take</button>
       </div>
     </div>
-  </main>
-
-  <footer class="footer mt-auto py-3 bg-light">
-    <div class="container">
-      <p class="lead">
-        Take a random thing from the list
-      </p>
-      <span class="text-muted">Created by <a href="https://github.com/KProskuryakov/take-thing">Kostyantyn
-          Proskuryakov</a> &copy; 2020-2021</span>
-    </div>
-  </footer>
 
   <!-- Bootstrap Bundle with Popper -->
-  <script src="bootstrap.bundle.min.js"></script>
-  <script>
-    const listForm = document.getElementById("listForm");
-    const takeButton = document.getElementById("takeButton");
-    const resultField = document.getElementById("resultField");
-
-    const localStorage = window.localStorage;
-    const listItems = localStorage.getItem("listItems");
-    console.log(localStorage.getItem("listItems"));
-    if (listItems != null) {
-      const list = JSON.parse(listItems);
-      list.forEach((item) => {
-        listForm.appendChild(existingItemComponent(item));
-      });
-    }
-
-    function populateStorage() {
-      const things = [];
-      document.querySelectorAll("#listForm > div > input").forEach((e) => {
-        if (e.value != "") {
-          things.push(e.value);
-        }
-      });
-
-      localStorage.setItem("listItems", JSON.stringify(things));
-      console.log(localStorage.getItem("listItems"));
-    }
-
-    function result() {
-      const things = [];
-      document.querySelectorAll("#listForm > div > input").forEach((e) => {
-        if (e.value != "") {
-          things.push(e.value);
-        }
-      });
-
-      if (things.length == 0) {
-        resultField.value = "Nothing to take from";
-        return true;
-      }
-      resultField.value = things[Math.floor(Math.random() * things.length)];
-      populateStorage();
-    }
-
-    takeButton.onclick = result
-
-    listForm.appendChild(newItemComponent());
-
-    function newItemComponent() {
-      const div = document.createElement("div");
-      div.className = "input-group mb-3";
-
-      const input = document.createElement("input");
-      input.className = "form-control";
-      input.type = "text";
-      input.placeholder = "Item";
-      input.onkeydown = (ev) => {
-        if (ev.key == "Enter") {
-          if (ev.shiftKey) {
-            result();
-            return false;
-          }
-          add();
-          return false;
-        } else if (ev.key == "ArrowDown") {
-          div.parentElement.firstElementChild.firstChild.focus();
-          return false;
-        } else if (ev.key == "ArrowUp" || (ev.key == "Backspace" && input.value == "")) {
-          const prev = div.previousSibling;
-          if (prev) {
-            div.previousSibling.firstChild.focus();
-          } else {
-            div.parentElement.lastChild.firstChild.focus();
-          }
-          return false;
-        }
-      };
-
-      const button = document.createElement("button");
-      button.className = "btn btn-success";
-      button.textContent = "+";
-      button.type = "button";
-      button.style = "width: 70px"
-      button.onclick = add
-
-      function add() {
-        if (input.value == "") {
-          input.value = "Item";
-        }
-        div.parentElement.insertBefore(existingItemComponent(input.value), div);
-        input.value = "";
-        populateStorage();
-      };
-
-      div.appendChild(input);
-      div.appendChild(button);
-      return div;
-    }
-
-    function existingItemComponent(text) {
-      const div = document.createElement("div");
-      div.className = "input-group mb-3";
-
-      const input = document.createElement("input");
-      input.className = "form-control";
-      input.type = "text"
-      input.value = text;
-      input.onkeydown = (ev) => {
-        if (ev.key == "Enter") {
-          if (ev.shiftKey) {
-            result();
-            return false;
-          }
-          div.nextSibling.firstChild.focus();
-          return false;
-        } else if (ev.key == "Delete" || (ev.key == "Backspace" && input.value == "")) {
-          div.nextSibling.firstChild.focus();
-          div.parentElement.removeChild(div);
-          populateStorage();
-          return false;
-        } else if (ev.key == "ArrowUp") {
-          const prev = div.previousSibling.firstChild;
-          console.log(prev);
-          if (prev) {
-            div.previousSibling.firstChild.focus();
-          } else {
-            div.parentElement.lastChild.firstChild.focus();
-          }
-          return false;
-        } else if (ev.key == "ArrowDown") {
-          div.nextSibling.firstChild.focus();
-          return false;
-        }
-      };
-
-      const button = document.createElement("button");
-      button.className = "btn btn-danger";
-      button.textContent = "X"
-      button.style = "width: 70px"
-      button.onclick = (_) => { div.parentElement.removeChild(div); populateStorage(); };
-
-      div.appendChild(input);
-      div.appendChild(button);
-      return div;
-    }
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+  <script src="index.js">
   </script>
   <script>
     if ('serviceWorker' in navigator) {
