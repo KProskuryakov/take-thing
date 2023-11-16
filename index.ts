@@ -1,18 +1,27 @@
-const textarea = document.getElementById("textarea") as HTMLTextAreaElement;
+const things = document.getElementById("things-to-take-from") as HTMLDivElement;
 const takeButton = document.getElementById("takeButton") as HTMLButtonElement;
-const resultField = document.getElementById("resultField") as HTMLInputElement;
 
+const sectionBox = document.getElementById("inlineCheckbox0") as HTMLInputElement;
 const lineBox = document.getElementById("inlineCheckbox1") as HTMLInputElement;
 const inlineBox = document.getElementById("inlineCheckbox2") as HTMLInputElement;
 const commaBox = document.getElementById("inlineCheckbox3") as HTMLInputElement;
 
-const text = localStorage.getItem("text");
-if (text != null) {
-  textarea.value = text;
+let selectedIndex: number | undefined = undefined;
+
+const storedText = localStorage.getItem("text");
+let text: string[] = [];
+if (storedText !== null) {
+  text = storedText.split("\n");
+  for (let line of text) {
+    const newDiv = document.createElement("div");
+    newDiv.innerText = line;
+    things.appendChild(newDiv);
+  }
 }
 
+
 const checkboxes = localStorage.getItem("checkboxes");
-if (checkboxes != null) {
+if (checkboxes !== null) {
   const checkeds = JSON.parse(checkboxes) as {lineBoxChecked: boolean, inlineBoxChecked: boolean, commaBoxChecked: boolean};
   lineBox.checked = checkeds.lineBoxChecked;
   inlineBox.checked = checkeds.inlineBoxChecked;
@@ -20,12 +29,33 @@ if (checkboxes != null) {
 }
 
 function populateStorage() {
-  localStorage.setItem("text", textarea.value);
-  localStorage.setItem("checkboxes", JSON.stringify({lineBoxChecked: lineBox.checked, inlineBoxChecked: inlineBox.checked, commaBoxChecked: commaBox.checked}))
+  const childText = getThingsAsText();
+  const mergedText = childText.join("\n");
+  localStorage.setItem("text", mergedText);
+  localStorage.setItem("checkboxes", JSON.stringify({lineBoxChecked: lineBox.checked, inlineBoxChecked: inlineBox.checked, commaBoxChecked: commaBox.checked}));
+  localStorage.setItem("selectedIndex", JSON.stringify(selectedIndex));
 }
 
-function flatMap<T>(a: Array<T>, func: (v: T) => T[]) {
+function getThingsAsText() {
+  const childs = Array.from(things.children);
+  const childText = flatMap(childs, (c) => oneOrEmpty(c.textContent?.trim()));
+  return childText;
+}
+
+function applyTextToThings(text: string[]) {
+
+}
+
+function flatMap<I, T>(a: Array<I>, func: (v: I) => T[]) {
   return new Array<T>().concat(...a.map(func));
+}
+
+function oneOrEmpty<T>(input: T | null | undefined): Array<T> {
+  if (input === null || input === undefined) {
+    return [];
+  } else {
+    return [input];
+  }
 }
 
 function replaceAllChars(s: string, c: string, r: string) {
@@ -41,32 +71,21 @@ function replaceAllChars(s: string, c: string, r: string) {
 }
 
 function result() {
-  let things = [textarea.value.trim()];
-  if (lineBox.checked) {
-    things = flatMap(things, (v) => v.split("\n").map(s => s.trim()));
-  } else {
-    things = things.map(v => replaceAllChars(v, "\n", " "));
-  }
-  if (inlineBox.checked) {
-      if (commaBox.checked) {
-        things = flatMap(things, (v) => [replaceAllChars(v, ",", " ").trim()]);
-      }
-      things = flatMap(things, (v) => v.split(/\s+/).map(s => s.trim()));
-  } else if (commaBox.checked) {
-    things = flatMap(things, (v) => v.split(",").map(s => s.trim()));
-  }
-  things = things.filter((s) => s.length > 0);
-  if (things.length === 0) {
-      resultField.value = "Nothing to take from";
-      return true;
-  }
-  resultField.value = things.filter((s) => s.trim().length > 0)[Math.floor(Math.random() * things.length)];
+  const textThings = getThingsAsText();
+  const pickedIndex = Math.floor(Math.random() * textThings.length);
+  const lines = Array.from(things.children);
+  lines.forEach((e) => e.classList.remove("taken"));
+
+  console.log(pickedIndex);
+
+  const pickedLine = lines[pickedIndex] as HTMLDivElement;
+  pickedLine.classList.add("taken");
   populateStorage();
 }
 
 takeButton.onclick = result
 
-textarea.onkeydown = (ev) => {
+things.onkeydown = (ev) => {
   if (ev.key == "Enter") {
     if (ev.shiftKey || ev.ctrlKey) {
       result();
